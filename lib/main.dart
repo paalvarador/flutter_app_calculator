@@ -1,18 +1,162 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
-void main() {
-  runApp(const MainApp());
-}
+void main() => runApp(AppCalculator());
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class AppCalculator extends StatelessWidget {
+  const AppCalculator({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+    return MaterialApp(
+      title: "App Calculator",
+      theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity),
+      home: HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _output = "0";
+  String _input = "0";
+  String _operation = "0";
+  double _num1 = 0;
+  double _num2 = 0;
+
+  buttonPressed(String buttonText) {
+    if (buttonText == "C") {
+      _output = "0";
+      _input = "0";
+      _num1 = 0;
+      _num2 = 0;
+      _operation = "";
+    } else if (buttonText == "+" ||
+        buttonText == "-" ||
+        buttonText == "x" ||
+        buttonText == "/") {
+      _num1 = double.parse(_input);
+      _operation = buttonText;
+      _output = "0";
+    } else if (buttonText == ".") {
+      if (_output.contains(".")) {
+        return;
+      } else {
+        _output = _output + buttonText;
+      }
+    } else if (buttonText == "=") {
+      _num2 = double.parse(_output);
+
+      if (_operation == "+") {
+        _output = (_num1 + _num2).toString();
+      }
+      if (_operation == "-") {
+        _output = (_num1 - _num2).toString();
+      }
+      if (_operation == "x") {
+        _output = (_num1 * _num2).toString();
+      }
+      if (_operation == "/") {
+        _output = (_num1 / _num2).toString();
+      }
+
+      _num1 = 0;
+      _num2 = 0;
+      _operation = "";
+    } else {
+      _output = _output + buttonText;
+    }
+
+    setState(() {
+      _input = double.parse(_output).toStringAsFixed(2);
+    });
+  }
+
+  Widget buildButton(String buttonText) {
+    return Expanded(
+      child: OutlinedButton(
+          onPressed: () => buttonPressed(buttonText),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.all(24.0),
+            backgroundColor: Colors.grey[200],
+          ),
+          child: Text(
+            buttonText,
+            style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          )),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Calculadora Básica'),
+      ),
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.symmetric(vertical: 24.0, horizontal: 12.0),
+              child: Text(
+                _input,
+                style: TextStyle(fontSize: 48.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Expanded(
+              child: Divider(),
+            ),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    buildButton("7"),
+                    buildButton("8"),
+                    buildButton("9"),
+                    buildButton("/"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    buildButton("4"),
+                    buildButton("5"),
+                    buildButton("6"),
+                    buildButton("x"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    buildButton("1"),
+                    buildButton("2"),
+                    buildButton("3"),
+                    buildButton("-"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    buildButton("."),
+                    buildButton("0"),
+                    buildButton("00"),
+                    buildButton("+"),
+                  ],
+                ),
+                Row(
+                  children: [
+                    buildButton("C"),
+                    buildButton("="),
+                  ],
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );
